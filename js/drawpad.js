@@ -13,10 +13,6 @@
     if (initialized) return;
     const canvas = document.getElementById("drawpad");
     const ctx = canvas.getContext("2d");
-
-    // Fill white so exports/downloads don't come out transparent.
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
@@ -33,7 +29,36 @@
         /* canvas not ready yet */
       }
     }
+
+    // Blank hand/nail outline someone can draw a design directly onto,
+    // instead of starting from an empty rectangle.
+    const templateImg = new Image();
+    templateImg.src = "assets/nail-template.png";
+
+    function paintBackground() {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (templateImg.complete && templateImg.naturalWidth) {
+        const scale = Math.min(canvas.width / templateImg.naturalWidth, canvas.height / templateImg.naturalHeight);
+        const w = templateImg.naturalWidth * scale;
+        const h = templateImg.naturalHeight * scale;
+        const x = (canvas.width - w) / 2;
+        const y = (canvas.height - h) / 2;
+        ctx.drawImage(templateImg, x, y, w, h);
+      }
+    }
+
+    paintBackground();
     snapshot();
+    templateImg.onload = () => {
+      // Redraw with the template now that it's actually loaded, as long as
+      // nobody has started drawing yet (don't clobber real work).
+      if (history.length <= 1) {
+        paintBackground();
+        history.length = 0;
+        snapshot();
+      }
+    };
 
     function pointerPos(e) {
       const rect = canvas.getBoundingClientRect();
@@ -75,13 +100,16 @@
     canvas.addEventListener("touchmove", move, { passive: false });
     canvas.addEventListener("touchend", end);
 
-    document.querySelectorAll(".swatch").forEach((sw) => {
-      sw.addEventListener("click", () => {
-        document.querySelectorAll(".swatch").forEach((s) => s.classList.remove("active"));
-        sw.classList.add("active");
-        color = sw.dataset.color;
-        document.getElementById("q-color").value = color;
-      });
+    // Event delegation: the color swatches under #color-swatches get
+    // re-rendered every time the color group changes (see colorpicker.js),
+    // so we listen on a stable ancestor instead of the swatches themselves.
+    document.getElementById("q-quote-color-area").addEventListener("click", (e) => {
+      const sw = e.target.closest(".swatch");
+      if (!sw) return;
+      document.querySelectorAll(".swatch").forEach((s) => s.classList.remove("active"));
+      sw.classList.add("active");
+      color = sw.dataset.color;
+      document.getElementById("q-color").value = color;
     });
     document.getElementById("q-color").addEventListener("input", (e) => {
       color = e.target.value;
@@ -91,8 +119,7 @@
       brushWidth = Number(e.target.value);
     });
     document.getElementById("q-clear").addEventListener("click", () => {
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      paintBackground();
       snapshot();
     });
     document.getElementById("q-undo").addEventListener("click", () => {
