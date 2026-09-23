@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tips & Sketches</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="brand">
+      <h1>Tips &amp; Sketches</h1>
+      <p class="tagline">art doodles · nail sets · quote requests · time-wasting games</p>
+    </div>
+
+    <nav class="tabs" aria-label="Site sections">
+      <button class="tab-btn" data-tab="art" aria-selected="true">Art</button>
+      <button class="tab-btn" data-tab="nails" aria-selected="false">Nails</button>
+      <button class="tab-btn" data-tab="quote" aria-selected="false">Get a Quote</button>
+      <button class="tab-btn" data-tab="games" aria-selected="false">Games</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ART -->
+    <section class="panel" id="tab-art">
+      <div class="section-head">
+        <h2>Art dump</h2>
+        <p>Whatever I felt like doodling lately, no theme required.</p>
+      </div>
+      <p class="note">Sample gallery — swap these for real photos of your pieces (see js/data.js)</p>
+      <div class="grid" id="art-grid"></div>
+    </section>
+
+    <!-- NAILS -->
+    <section class="panel" id="tab-nails" hidden>
+      <div class="section-head">
+        <h2>Nail sets</h2>
+        <p>A few looks I've done — Gel-X and press-ons.</p>
+      </div>
+      <p class="note">Sample gallery — swap these for real photos of your sets (see js/data.js)</p>
+      <div class="grid" id="nails-grid"></div>
+    </section>
+
+    <!-- QUOTE -->
+    <section class="panel" id="tab-quote" hidden>
+      <div class="section-head">
+        <h2>Get a nail quote</h2>
+        <p>Send me the vibe — upload inspo pics, sketch your own idea, or both — and I'll get back to you.</p>
+      </div>
+
+      <form id="quote-form" novalidate>
+        <div class="field">
+          <label for="q-name">Your name</label>
+          <input type="text" id="q-name" name="name" autocomplete="name" required>
+          <p class="err" id="err-name" hidden>Tell me who you are!</p>
+        </div>
+
+        <div class="field">
+          <label for="q-contact">Best way to reach you</label>
+          <p class="hint">Email, Instagram handle, phone — whatever's easiest</p>
+          <input type="text" id="q-contact" name="contact" required>
+          <p class="err" id="err-contact" hidden>I need some way to get back to you.</p>
+        </div>
+
+        <fieldset class="field">
+          <legend>Gel-X or press-ons?</legend>
+          <label class="radio-opt">
+            <input type="radio" name="service" value="Gel-X" id="svc-gelx">
+            <span>Gel-X</span>
+          </label>
+          <label class="radio-opt">
+            <input type="radio" name="service" value="Press-ons" id="svc-presson">
+            <span>Press-ons</span>
+          </label>
+          <p class="err" id="err-service" hidden>Pick one so I know how to prep!</p>
+        </fieldset>
+
+        <div class="field">
+          <label for="q-caption">Tell me about the idea</label>
+          <p class="hint">Shape, length, colors, occasion, deadline — the more detail the better</p>
+          <textarea id="q-caption" name="caption" rows="4" placeholder="e.g. almond shape, medium length, soft pink chrome with a few gold flakes as an accent nail, need them by the 30th for a wedding!"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="q-upload">Inspo pics</label>
+          <p class="hint">Optional — upload photos of designs you like</p>
+          <input type="file" id="q-upload" accept="image/*" multiple>
+          <div class="thumbs" id="q-thumbs"></div>
+        </div>
+
+        <div class="field">
+          <label>Or sketch your own idea</label>
+          <p class="hint">Optional — draw it right here</p>
+          <div class="draw-toolbar">
+            <button type="button" class="swatch active" data-color="#000000" style="background:#000000" aria-label="Black"></button>
+            <button type="button" class="swatch" data-color="#ff5c8a" style="background:#ff5c8a" aria-label="Pink"></button>
+            <button type="button" class="swatch" data-color="#4fd1b5" style="background:#4fd1b5" aria-label="Mint"></button>
+            <button type="button" class="swatch" data-color="#ffcb3d" style="background:#ffcb3d" aria-label="Yellow"></button>
+            <button type="button" class="swatch" data-color="#8d7bff" style="background:#8d7bff" aria-label="Lavender"></button>
+            <input type="color" id="q-color" value="#000000" aria-label="Custom color">
+            <label class="range-label">Brush size
+              <input type="range" id="q-brush" min="1" max="16" value="4" aria-label="Brush size">
+            </label>
+            <button type="button" id="q-undo">Undo</button>
+            <button type="button" id="q-clear">Clear</button>
+          </div>
+          <canvas id="drawpad" width="600" height="300"></canvas>
+        </div>
+
+        <button type="submit" class="btn-primary">Send my quote request</button>
+
+        <div class="recap" id="q-recap" hidden>
+          <h3>Recap ready</h3>
+          <p class="hint">Click below to open an email with your details filled in, and download your sketch/inspo to attach.</p>
+          <pre id="q-recap-text"></pre>
+          <div class="recap-actions">
+            <a id="q-mailto" href="#" target="_blank" rel="noopener" class="btn-primary">Open email</a>
+            <a id="q-download" href="#" download="nail-request.png" hidden class="btn-secondary">Download my design image</a>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- GAMES -->
+    <section class="panel" id="tab-games" hidden>
+      <div class="section-head">
+        <h2>Games</h2>
+        <p>Kill some time between nail appointments.</p>
+      </div>
+
+      <nav class="game-tabs" aria-label="Games">
+        <button class="game-tab-btn" data-game="ttt" aria-selected="true">Tic-Tac-Toe</button>
+        <button class="game-tab-btn" data-game="mem" aria-selected="false">Memory Match</button>
+        <button class="game-tab-btn" data-game="catch" aria-selected="false">Polish Catch</button>
+      </nav>
+
+      <div class="game-panel" id="game-ttt">
+        <h3>Tic-Tac-Toe</h3>
+        <p class="hint">Two players, same device. X goes first.</p>
+        <p class="status-line" id="ttt-status">X's turn</p>
+        <div class="ttt-board" id="ttt-board"></div>
+        <button type="button" class="btn-secondary" id="ttt-reset">Reset board</button>
+      </div>
+
+      <div class="game-panel" id="game-mem" hidden>
+        <h3>Memory Match</h3>
+        <p class="hint">Find all the matching polish pairs.</p>
+        <div class="mem-stats">
+          <span id="mem-moves">Moves: 0</span>
+          <span id="mem-pairs">Pairs: 0/8</span>
+        </div>
+        <div class="mem-grid" id="mem-grid"></div>
+        <button type="button" class="btn-secondary" id="mem-reset">Shuffle again</button>
+      </div>
+
+      <div class="game-panel" id="game-catch" hidden>
+        <h3>Polish Catch</h3>
+        <p class="hint">Move your mouse/finger to catch the falling bottles. Miss 3 and it's over.</p>
+        <div class="catch-stats">
+          <span id="catch-score">Score: 0</span>
+          <span id="catch-lives">Lives: 3</span>
+        </div>
+        <canvas id="catchcv" width="360" height="480"></canvas>
+        <button type="button" class="btn-secondary" id="catch-reset">Restart</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>quote requests go to <a href="mailto:mkansal2@illinois.edu">mkansal2@illinois.edu</a></p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/tabs.js"></script>
+  <script src="js/gallery.js"></script>
+  <script src="js/drawpad.js"></script>
+  <script src="js/quote.js"></script>
+  <script src="js/game-ttt.js"></script>
+  <script src="js/game-memory.js"></script>
+  <script src="js/game-catch.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
